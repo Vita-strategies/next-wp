@@ -615,3 +615,55 @@ export const fallbackGetFeaturedMediaById = async (
   const item = data.media.find((mediaItem) => mediaItem.id === id);
   return clone(item ?? data.media[0]);
 };
+
+export const fallbackSearchCategories = async (
+  query: string
+): Promise<Category[]> => {
+  const normalized = query.trim().toLowerCase();
+
+  if (!normalized) {
+    return clone(data.categories);
+  }
+
+  return clone(
+    data.categories.filter(
+      (category) =>
+        category.name.toLowerCase().includes(normalized) ||
+        category.description.toLowerCase().includes(normalized)
+    )
+  );
+};
+
+export const fallbackSearchTags = async (query: string): Promise<Tag[]> => {
+  const normalized = query.trim().toLowerCase();
+
+  if (!normalized) {
+    return clone(data.tags);
+  }
+
+  return clone(
+    data.tags.filter(
+      (tag) =>
+        tag.name.toLowerCase().includes(normalized) ||
+        tag.description.toLowerCase().includes(normalized)
+    )
+  );
+};
+
+export const fallbackSearchAuthors = async (
+  query: string
+): Promise<Author[]> => {
+  const normalized = query.trim().toLowerCase();
+
+  if (!normalized) {
+    return clone(data.authors);
+  }
+
+  return clone(
+    data.authors.filter(
+      (author) =>
+        author.name.toLowerCase().includes(normalized) ||
+        author.description.toLowerCase().includes(normalized)
+    )
+  );
+};
