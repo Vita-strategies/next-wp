@@ -103,52 +103,47 @@ const defaultFetchOptions: FetchOptions = {
   },
 };
 
-aSYNCfunction wordpressFetch<T>(
+async function wordpressFetch<T>(
   url: string,
   options: FetchOptions = {}
 ): Promise<T> {
-  return withFallback(
-    () => Promise.reject(new WordPressAPIError("Fallback fetch should not be invoked", 500, url)),
-    async () => {
-      const headersList = await headers();
-      const userAgent = headersList.get("user-agent") || "Next.js WordPress Client";
+  const headersList = await headers();
+  const userAgent = headersList.get("user-agent") || "Next.js WordPress Client";
 
-      try {
-        const response = await fetch(url, {
-          ...defaultFetchOptions,
-          ...options,
-          headers: {
-            ...defaultFetchOptions.headers,
-            "User-Agent": userAgent,
-            ...options.headers,
-          },
-        });
+  try {
+    const response = await fetch(url, {
+      ...defaultFetchOptions,
+      ...options,
+      headers: {
+        ...defaultFetchOptions.headers,
+        "User-Agent": userAgent,
+        ...options.headers,
+      },
+    });
 
-        if (!response.ok) {
-          throw new WordPressAPIError(
-            `WordPress API request failed: ${response.statusText}`,
-            response.status,
-            url
-          );
-        }
-
-        return response.json();
-      } catch (error) {
-        if (error instanceof WordPressAPIError) {
-          throw error;
-        }
-
-        const message =
-          error instanceof Error ? error.message : "Unknown network error";
-
-        throw new WordPressAPIError(
-          `WordPress API request failed: ${message}`,
-          503,
-          url
-        );
-      }
+    if (!response.ok) {
+      throw new WordPressAPIError(
+        `WordPress API request failed: ${response.statusText}`,
+        response.status,
+        url
+      );
     }
-  );
+
+    return response.json();
+  } catch (error) {
+    if (error instanceof WordPressAPIError) {
+      throw error;
+    }
+
+    const message =
+      error instanceof Error ? error.message : "Unknown network error";
+
+    throw new WordPressAPIError(
+      `WordPress API request failed: ${message}`,
+      503,
+      url
+    );
+  }
 }
 
 export async function getAllPosts(filterParams?: {
